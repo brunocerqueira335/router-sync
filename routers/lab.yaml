@@ -1,0 +1,10 @@
+production:
+  name: "Router_Producao"
+  ip: "192.168.200.40"
+  username: "admin"
+  password: "admin123"
+backup:
+  name: "Router_Backup"
+  ip: "192.168.200.41"
+  username: "admin"
+  password: "admin123"

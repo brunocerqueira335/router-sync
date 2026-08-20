@@ -1,0 +1,26 @@
+zabbix_export:
+  version: '7.0'
+  host_groups:
+    - uuid: 2abd43e7aead45c490f24013fe62f5df
+      name: Roteador
+  hosts:
+    - host: 'Router Sync Configuration'
+      name: 'Router Sync Configuration'
+      groups:
+        - name: Roteador
+      items:
+        - name: 'Router Sync - Status'
+          type: TRAP
+          key: router.sync.status
+          delay: '0'
+          triggers:
+            - expression: 'last(/Router Sync Configuration/router.sync.status)=1'
+              name: 'Erro ao sincronizar configuração entre Roteadores'
+              priority: WARNING
+            - expression: 'last(/Router Sync Configuration/router.sync.status)=2'
+              name: 'Há pendência na sincronização entre Roteadores'
+              priority: WARNING
+            - expression: 'nodata(/Router Sync Configuration/router.sync.status, 3d)=1'
+              name: 'Script não executou ou não reportou status há mais de 3 dias'
+              priority: WARNING
+      inventory_mode: DISABLED
