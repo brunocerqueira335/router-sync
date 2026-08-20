@@ -1,3 +1,4 @@
+# Recomendado criar usuário somente leitura exclusivo para esse script no roteador de produção.
 production:
   name: "Router_Producao"
   ip: "192.168.200.40"
