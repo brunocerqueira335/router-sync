@@ -25,16 +25,17 @@ Obs.: Caso o script encontre algo que está fora de ordem e ele não consiga aju
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Como Executar (Debian)
 
-1. Instale as dependências:
-   ```pip install -r requirements.txt
-   ```
+1. Instalar pré-requisitos  
+sudo apt update  
+sudo apt install zabbix-sender python3 python3-venv python3-pip -y  
 
-2. Execute o script:
-   ```python src/main.py
-   ```
-
+2. Configurar ambiente virtual (considerando que a pasta do projeto está em /opt/router-sync)  
+cd /opt/router-sync  
+python3 -m venv .venv  
+.venv/bin/pip install -r requirements.txt  
+   
 ---
 
 ## 📊 Monitoramento no Zabbix (v7.0.17)
@@ -64,16 +65,8 @@ O projeto inclui o arquivo **`zbx_export_hosts.yaml`** pronto para importação.
 
 ### Execução automática do Script em Debian:
 
-1. Instalar pré-requisitos
-sudo apt update
-sudo apt install zabbix-sender python3 python3-venv python3-pip -y
+Abra o Cron e configure o agendamento automático (ex. às 03h todo dia):  
+crontab -e  
 
-2. Configurar ambiente virtual (considerando que a pasta do projeto está em /opt/router-sync)
-cd /opt/router-sync
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-
-3. Abra o Cron e configure o agendamento automático (ex. às 03h todo dia):
-crontab -e
-# Adicione a linha abaixo para executar o script todos os dias às 03:00 da manhã
+### Adicione a linha abaixo para executar o script todos os dias às 03:00 da manhã
 0 3 * * * cd /opt/router-sync && /opt/router-sync/.venv/bin/python src/main.py >> /opt/router-sync/logs/cron.log 2>&1
