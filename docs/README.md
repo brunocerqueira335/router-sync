@@ -15,7 +15,9 @@ Script em Python para sincronizar configurações entre roteadores Juniper MX (P
 - Termos do Firewall Filter e Firewall Family inet/inet6
 - Ordem dos filtros BGP de import e export, dentro do grupo BGP e dentro do neighbor.
 - Ordem dos input-list e output-list das interfaces (family inet/inet6).
+  
 Qualquer outro item que necessite de ordem específica, deve ser implementado no Script para que seja identificado e ordenado. 
+
 Obs.: Caso o script encontre algo que está fora de ordem e ele não consiga ajustar, vai gerar um LOG e gerar código de erro 2 (pendência de ajuste).
 
 3. **Aplica com Segurança:** Envia as alterações usando `commit confirmed` com tempo padrão de 3 minutos, aguarda 5 segundos, faz o commit final.
