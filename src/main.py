@@ -42,7 +42,7 @@ logger = logging.getLogger("router_sync")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Acesso aos roteadores em formato YAML
-ROUTERS_FILE = BASE_DIR / "routers" / "lab.yaml"
+ROUTERS_FILE = BASE_DIR / "routers" / "routers.yaml"
 
 # Configurações dos roteadores
 CONFIGS_DIR = BASE_DIR / "configs"
