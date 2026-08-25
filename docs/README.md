@@ -34,7 +34,13 @@ sudo apt install zabbix-sender python3 python3-venv python3-pip -y
 2. Configurar ambiente virtual (considerando que a pasta do projeto está em /opt/router-sync)  
 cd /opt/router-sync  
 python3 -m venv .venv  
-.venv/bin/pip install -r requirements.txt  
+.venv/bin/pip install -r requirements.txt
+
+3. Ajustar os Hosts
+vi routers/routers.yaml
+
+4. Executar aplicação
+.venv/bin/python src/main.py
    
 ---
 
@@ -68,5 +74,5 @@ O projeto inclui o arquivo **`zbx_export_hosts.yaml`** pronto para importação.
 Abra o Cron e configure o agendamento automático (ex. às 03h todo dia):  
 crontab -e  
 
-### Adicione a linha abaixo para executar o script todos os dias às 03:00 da manhã
+### Adicione a linha abaixo para executar o script todos os dias às 03:00 da manhã (considerando que o script está em /opt/)
 0 3 * * * cd /opt/router-sync && /opt/router-sync/.venv/bin/python src/main.py >> /opt/router-sync/logs/cron.log 2>&1
