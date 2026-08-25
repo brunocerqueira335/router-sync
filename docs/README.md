@@ -45,7 +45,9 @@ Nas linhas de "PROTECTED_CONFIGS"
 
 6. Executar aplicação  
 .venv/bin/python src/main.py
-   
+
+Lembre-se de ativar o Netconf no Roteador Juniper:
+ set system services netconf ssh port 830
 ---
 
 ## 📊 Monitoramento no Zabbix (v7.0.17)
