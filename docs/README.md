@@ -36,10 +36,10 @@ cd /opt/router-sync
 python3 -m venv .venv  
 .venv/bin/pip install -r requirements.txt
 
-3. Ajustar os Hosts
+3. Ajustar os Hosts  
 vi routers/routers.yaml
 
-4. Executar aplicação
+4. Executar aplicação  
 .venv/bin/python src/main.py
    
 ---
