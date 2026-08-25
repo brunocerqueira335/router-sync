@@ -39,7 +39,11 @@ python3 -m venv .venv
 3. Ajustar os Hosts  
 vi routers/routers.yaml
 
-4. Executar aplicação  
+4. Ajustar configurações protegidas  
+vi src/main.py  
+Nas linhas de "PROTECTED_CONFIGS"  
+
+6. Executar aplicação  
 .venv/bin/python src/main.py
    
 ---
