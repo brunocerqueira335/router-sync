@@ -25,6 +25,16 @@ Obs.: Caso o script encontre algo que está fora de ordem e ele não consiga aju
 
 ---
 
+## Antes de executar ##
+É importante criar usuário somente leitura no Roteador em produção para evitar que algum erro de configuração, altere alguma configuração.  
+Também é importante permitir a exibição de SECRET para backup completo.  
+
+Exemplo de Class no Juniper:  
+set system login class read_only permissions secret  
+set system login class read_only permissions view-configuration  
+set system login class read_only allow-commands "show configuration"  
+
+
 ## 🚀 Como Executar (Debian)
 
 1. Instalar pré-requisitos  
