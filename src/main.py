@@ -57,7 +57,8 @@ PROTECTED_CONFIGS = [
     "routing-options static route 0.0.0.0/0",
     "system root-authentication",
     "system login user",
-    "interfaces ge-0/0/0"
+    "interfaces ge-0/0/0",
+    "version"
 ]
 
 # Códigos de saída para ajudar no sistema de monitoramento
@@ -687,44 +688,6 @@ def main():
         backup_config_filtered = filter_protected_configs(backup_config)
         save_filtered_config(backup["name"], backup_config_filtered)
 
-        prod_ordered_terms, prod_unsupported_ordered_lines = (
-            extract_ordered_terms(prod_config_filtered)
-        )
-
-        backup_ordered_terms, backup_unsupported_ordered_lines = (
-            extract_ordered_terms(backup_config_filtered)
-        )
-        out_of_order = compare_ordered_terms(
-            prod_ordered_terms,
-            backup_ordered_terms
-        )
-
-        if prod_unsupported_ordered_lines or backup_unsupported_ordered_lines:
-            print(
-                "\nHá configurações que o Script não tem suporte para oganizar, favor revisar manualmente"
-            )
-            logger.warning(
-                "\nHá configurações que o Script não tem suporte para oganizar, favor revisar manualmente"
-            )
-
-            if prod_unsupported_ordered_lines:
-                print("\nProdução:")
-                logger.warning("\nProdução:")
-
-                for line in prod_unsupported_ordered_lines:
-                    print(f" {line}")
-                    logger.warning(" %s", line)
-
-            if backup_unsupported_ordered_lines:
-                print("\nBackup:")
-                logger.warning("\nBackup:")
-
-                for line in backup_unsupported_ordered_lines:
-                    print(f" {line}")
-                    logger.warning(" %s", line)
-
-            return EXIT_PENDING
-
         missing_in_backup, extra_in_backup = compare_configs(
             prod_config_filtered,
             backup_config_filtered
@@ -737,50 +700,92 @@ def main():
 
         verify_changes(changes, unsupported_lines)
 
-        if out_of_order:
-            print("Hierarquias fora de ordem:")
-            logger.warning("Hierarquias fora de ordem:")
+        # Se houver alterações, aplicamos primeiro antes de tentar organizar.
+        if changes:
+            all_changes = changes
+        else:
+            prod_ordered_terms, prod_unsupported_ordered_lines = (
+                extract_ordered_terms(prod_config_filtered)
+            )
 
-            for hierarchy, orders in out_of_order.items():
-                production_order = " -> ".join(orders["production"])
-                backup_order = " -> ".join(orders["backup"])
+            backup_ordered_terms, backup_unsupported_ordered_lines = (
+                extract_ordered_terms(backup_config_filtered)
+            )
 
-                print(f"\n{hierarchy}")
-                print(f"  Produção: {production_order}")
-                print(f"  Backup:   {backup_order}")
+            out_of_order = compare_ordered_terms(
+                prod_ordered_terms,
+                backup_ordered_terms
+            )
 
+            if prod_unsupported_ordered_lines or backup_unsupported_ordered_lines:
+                print(
+                    "\nHá configurações que o Script não tem suporte para oganizar, favor revisar manualmente"
+                )
                 logger.warning(
-                    "%s | Produção: %s | Backup: %s",
-                    hierarchy,
-                    production_order,
-                    backup_order,
+                    "\nHá configurações que o Script não tem suporte para oganizar, favor revisar manualmente"
                 )
 
-        ordered_changes, unsupported_ordered_hierarchies = (
-            build_ordered_changes(out_of_order)
-        )
+                if prod_unsupported_ordered_lines:
+                    print("\nProdução:")
+                    logger.warning("\nProdução:")
 
-        if unsupported_ordered_hierarchies:
-            print("\nNão foi possível organizar:")
-            logger.warning("\nNão foi possível organizar:")
+                    for line in prod_unsupported_ordered_lines:
+                        print(f" {line}")
+                        logger.warning(" %s", line)
 
-            for hierarchy in unsupported_ordered_hierarchies:
-                print(f" {hierarchy}")
-                logger.warning(f" Ordenação pendente: {hierarchy}")
+                if backup_unsupported_ordered_lines:
+                    print("\nBackup:")
+                    logger.warning("\nBackup:")
 
-        if ordered_changes:
-            print("\nAlterações de ordem a aplicar:")
-            logger.info("\nAlterações de ordem a aplicar:")
-            for command in ordered_changes:
-                print(command)
-                logger.info(command)
+                    for line in backup_unsupported_ordered_lines:
+                        print(f" {line}")
+                        logger.warning(" %s", line)
 
-        all_changes = changes + ordered_changes
+                return EXIT_PENDING
 
-        if not all_changes:
-            print("Configurações sincronizadas.")
-            logger.info("Configurações sincronizadas.")
-            return EXIT_OK
+            if out_of_order:
+                print("Hierarquias fora de ordem:")
+                logger.warning("Hierarquias fora de ordem:")
+
+                for hierarchy, orders in out_of_order.items():
+                    production_order = " -> ".join(orders["production"])
+                    backup_order = " -> ".join(orders["backup"])
+
+                    print(f"\n{hierarchy}")
+                    print(f"  Produção: {production_order}")
+                    print(f"  Backup:   {backup_order}")
+
+                    logger.warning(
+                        "%s | Produção: %s | Backup: %s",
+                        hierarchy,
+                        production_order,
+                        backup_order,
+                    )
+
+            ordered_changes, unsupported_ordered_hierarchies = (
+                build_ordered_changes(out_of_order)
+            )
+
+            if unsupported_ordered_hierarchies:
+                print("\nNão foi possível organizar:")
+                logger.warning("\nNão foi possível organizar:")
+
+                for hierarchy in unsupported_ordered_hierarchies:
+                    print(f" {hierarchy}")
+                    logger.warning(f" Ordenação pendente: {hierarchy}")
+
+            if ordered_changes:
+                print("\nAlterações de ordem a aplicar:")
+                logger.info("\nAlterações de ordem a aplicar:")
+                for command in ordered_changes:
+                    print(command)
+                    logger.info(command)
+
+                all_changes = ordered_changes
+            else:
+                print("Configurações sincronizadas.")
+                logger.info("Configurações sincronizadas.")
+                return EXIT_OK
 
         apply_dev = connect_to_router(backup)
 
