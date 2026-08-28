@@ -22,7 +22,7 @@ from jnpr.junos.exception import ConnectError
 from jnpr.junos.utils.config import Config
 
 # Zabbix
-ip_zabbix = "192.168.200.203"
+zabbix_servers = "192.168.200.203"
 name_host = "Router Sync Configuration"
 
 
@@ -630,28 +630,29 @@ def get_zabbix_sender():
 def send_status_to_zabbix(status):
     zabbix_sender = get_zabbix_sender()
 
-    command = [
-        str(zabbix_sender),
-        "-z", ip_zabbix,
-        "-s", name_host,
-        "-k", "router.sync.status",
-        "-o", str(status)
-    ]
+    for server_ip in zabbix_servers:
+        command = [
+            str(zabbix_sender),
+            "-z", server_ip,
+            "-s", name_host,
+            "-k", "router.sync.status",
+            "-o", str(status)
+        ]
 
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True
-    )
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
 
-    if result.returncode != 0:
-        logger.error(
-            f"Erro ao enviar status para o Zabbix: {result.stderr}"
-        )
-    else:
-        logger.info(
-            f"Status {status} enviado ao Zabbix"
-        )
+        if result.returncode != 0:
+            logger.error(
+                f"Erro ao enviar status para o Zabbix: {result.stderr}"
+            )
+        else:
+            logger.info(
+                f"Status {status} enviado ao Zabbix"
+            )
 
 def main():
     setup_logger()
