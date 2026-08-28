@@ -22,7 +22,10 @@ from jnpr.junos.exception import ConnectError
 from jnpr.junos.utils.config import Config
 
 # Zabbix
-zabbix_servers = "192.168.200.203"
+zabbix_servers = [
+    "192.168.200.203",
+    "192.168.200.204"
+]
 name_host = "Router Sync Configuration"
 
 
